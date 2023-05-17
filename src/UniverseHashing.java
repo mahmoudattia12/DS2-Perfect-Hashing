@@ -4,6 +4,9 @@ public class UniverseHashing {
     // h is a random b-by-u 0/1 matrix
     private int[][] h;
     private int hashTableLength;
+
+    //int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
+    //or int M = (int)Math.pow(2,Math.ceil(Math.log(n) / Math.log(2)));
     public UniverseHashing(int M, int maxKey){
         int u = Integer.SIZE - Integer.numberOfLeadingZeros(maxKey); //number of bits for the max inserted key
         int b = ( int)Math.ceil(Math.log(M) / Math.log(2));         //number of bits to represent h(x)
@@ -12,7 +15,7 @@ public class UniverseHashing {
         Random random = new Random();
         for(int i = 0; i < b; i++){
             for(int j = 0; j < u; j++){
-                h[i][j] = random.nextInt(2);            //generates 0/1
+                h[i][j] = random.nextInt(2);            //generates 0/1 randomly
             }
         }
     }
@@ -27,7 +30,7 @@ public class UniverseHashing {
             }
             result[i] = sum%2;
         }
-        return getInt(result)%hashTableLength;  //h(x)
+        return getInt(result);  //h(x) //------------------------------>
     }
     private int[] getBinaryArray(int number) {
         int numBits = (int) (Math.log(number) / Math.log(2)) + 1;
