@@ -8,7 +8,53 @@ public class HASH_N2 {
     public HASH_N2(){
         n = 0;
     }
+    //initialize with a list
+    public HASH_N2(int[] toHashList){
+        System.out.print("batched count: ");
+        int c = batchInsert(toHashList);
+        System.out.println(c);
+//        n= toHashList.length;
+//        int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
+//        hashTable = new Integer[M];
+//        h = new UniversalHashing(M);
+    }
 
+    //batch insert
+    public int batchInsert(int[] list){
+        int count = 0;
+        if(n == 0){
+            n= list.length;
+            boolean repeat = true;
+            while (repeat){
+                repeat = false;
+                count = 0;
+                int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
+                hashTable = new Integer[M];
+                h = new UniversalHashing(M);
+                for(int i = 0; i < list.length; i++){
+                    int index = h.hash(list[i]);
+                    if(hashTable[index] != null&& hashTable[index] != list[i]){
+                        repeat = true;
+                        rehashTries++;
+                        break;
+                    }else if(hashTable[index] != null && hashTable[index] == list[i]){
+//                        n--;
+                    }else{
+                        hashTable[index] = list[i];
+                        count++;
+                    }
+                }
+            }
+
+
+        }else{
+            Integer[] prev = hashTable;
+            //still not implemented
+
+        }
+        return count;
+
+    }
 
     //insert in N2 method
     public boolean insert(int key){
@@ -27,7 +73,7 @@ public class HASH_N2 {
             rehashTries++;
             return rehash(hashTable, key);
         }else if(hashTable[index] != null && hashTable[index] == key){
-            n--;
+//            n--;
             return false;
         }
         hashTable[index] = key;
@@ -61,7 +107,7 @@ public class HASH_N2 {
                     repeat = true;
                     rehashTries++;
                 }else if(hashTable[index] != null && hashTable[index] == newKey){
-                    n--;
+//                    n--;
                     flag =  false;
                 }else{
                     hashTable[index] = newKey;
