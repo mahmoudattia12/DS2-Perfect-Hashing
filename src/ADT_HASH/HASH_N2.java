@@ -10,6 +10,7 @@ public class HASH_N2 {
     }
 
 
+    //insert in N2 method
     public boolean insert(int key){
         n++;
         if(n == 1){
