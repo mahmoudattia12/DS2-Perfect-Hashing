@@ -13,20 +13,10 @@ public class Main {
 
 
     public static void main(String[] args) {
-        int[] arr = generateDistinctArray(10000);
-        arr[0] = 5; arr[1] = 5;
-        HASH_N2 hashn2 = new HASH_N2(arr);
-//        Random random = new Random();
-//        for(int i = 0; i < 1000; i++){
-//            System.out.println(hashn2.insert(random.nextInt()));
-//
-//        }
-
-        System.out.println("n : " +hashn2.n);
-        System.out.println("tries: " + hashn2.rehashTries);
-        System.out.println("table size: " + hashn2.hashTable.length);
-
-
+        int[] arr = generateDistinctArray(100);
+        HASH_N2 hashn2 = new HASH_N2(arr.length);
+        hashn2.batchInsert(arr);
+        System.out.println("nTries: " + hashn2.getNumberOfRebuild());
     }
 
     public static int[] generateDistinctArray(int size) {
@@ -40,11 +30,11 @@ public class Main {
         Random random = new Random();
 
         for (int i = 0; i < size; i++) {
-            int num = random.nextInt(); // Generate a random number
+            int num = Math.abs(random.nextInt()); // Generate a random number
 
             // Check if the number is already in the set
             while (set.contains(num)) {
-                num = random.nextInt(); // Generate a new random number
+                num = Math.abs(random.nextInt()); // Generate a new random number
             }
 
             array[i] = num; // Assign the unique number to the array

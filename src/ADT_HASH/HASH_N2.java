@@ -2,120 +2,94 @@ package ADT_HASH;
 import UNIVERSAL.UniversalHashing;
 
 public class HASH_N2 {
-    public Integer[] hashTable;
-    public int n, rehashTries = 0;
+    private Integer[] hashTable;
+    private int n, M, rehashTries = 0, countInserted = 0;
     UniversalHashing h;
-    public HASH_N2(){
-        n = 0;
+    public HASH_N2(int N){
+        n = N;
+        M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
+        hashTable = new Integer[M];
+        h = new UniversalHashing(M);
     }
-    //initialize with a list
-    public HASH_N2(int[] toHashList){
-        System.out.print("batched count: ");
-        int c = batchInsert(toHashList);
-        System.out.println(c);
-//        n= toHashList.length;
-//        int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
-//        hashTable = new Integer[M];
-//        h = new UniversalHashing(M);
-    }
-
-    //batch insert
-    public int batchInsert(int[] list){
-        int count = 0;
-        if(n == 0){
-            n= list.length;
-            boolean repeat = true;
-            while (repeat){
-                repeat = false;
-                count = 0;
-                int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
-                hashTable = new Integer[M];
-                h = new UniversalHashing(M);
-                for(int i = 0; i < list.length; i++){
-                    int index = h.hash(list[i]);
-                    if(hashTable[index] != null&& hashTable[index] != list[i]){
-                        repeat = true;
-                        rehashTries++;
-                        break;
-                    }else if(hashTable[index] != null && hashTable[index] == list[i]){
-//                        n--;
-                    }else{
-                        hashTable[index] = list[i];
-                        count++;
-                    }
-                }
-            }
-
-
-        }else{
-            Integer[] prev = hashTable;
-            //still not implemented
-
-        }
-        return count;
-
-    }
-
-    //insert in N2 method
     public boolean insert(int key){
-        n++;
-        if(n == 1){
-            int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
-            hashTable = new Integer[M];
-            h = new UniversalHashing(M);
-            int index = h.hash(key);
-            hashTable[index] = key;
-            return true;
+        //can't insert more than the given size
+        if(n == countInserted){
+            return false;
         }
-
         int index = h.hash(key);
         if(hashTable[index] != null && hashTable[index] != key){
             rehashTries++;
-            return rehash(hashTable, key);
+            return rehash(key);
         }else if(hashTable[index] != null && hashTable[index] == key){
-//            n--;
             return false;
         }
         hashTable[index] = key;
+        countInserted++;
         return true;
     }
-
-
-    private boolean rehash(Integer[] currTable, int newKey){
-        Integer[] prev = currTable;
-        boolean repeat = true;
-        boolean flag = false;
-        while (repeat){
-            repeat = false;
-            int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
+    public int batchInsert(int[] list){
+        int countBatch = 0;
+        for(int i = 0; i < list.length && n > countInserted; i++){
+            if(insert(list[i])) countBatch++;
+        }
+        return countBatch;
+    }
+    private boolean rehash(int newKey){
+        Integer[] prev = hashTable;
+        boolean collision = true, flag = true;
+        while (collision){
+            collision = false;
             hashTable = new Integer[M];
             h = new UniversalHashing(M);
             for(int i = 0; i < prev.length; i++){
                 if(prev[i] != null){
                     int index = h.hash(prev[i]);
                     if(hashTable[index] != null&& hashTable[index] != prev[i]){
-                        repeat = true;
+                        collision = true;
                         rehashTries++;
                         break;
                     }
                     hashTable[index] = prev[i];
                 }
             }
-            if(!repeat){
+            if(!collision){
                 int index = h.hash(newKey);
                 if(hashTable[index] != null && hashTable[index] != newKey){
-                    repeat = true;
+                    collision = true;
                     rehashTries++;
                 }else if(hashTable[index] != null && hashTable[index] == newKey){
-//                    n--;
                     flag =  false;
                 }else{
+                    countInserted++;
                     hashTable[index] = newKey;
-                    flag = true;
                 }
             }
         }
         return flag;
     }
+    public boolean search(int key){
+        int index = h.hash(key);
+        return hashTable[index] != null && hashTable[index] == key;
+    }
+    public boolean delete(int key){
+        int index = h.hash(key);
+        if(hashTable[index] != null && hashTable[index] == key){
+            hashTable[index] = null;
+            countInserted--;
+            return true;
+        }
+        return false;
+    }
+    public int batchDelete(int[] list){
+        int countDelete = 0;
+        for(int i = 0; i < list.length; i++){
+            if(delete(list[i])) countDelete++;
+        }
+        return countDelete;
+    }
+    public int getNumberOfRebuild(){
+        return rehashTries;
+    }
+
 
 }
