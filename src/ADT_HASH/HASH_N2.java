@@ -1,7 +1,7 @@
 package ADT_HASH;
 import UNIVERSAL.UniversalHashing;
 
-public class HASH_N2 {
+public class HASH_N2 implements IHASH {
     private Integer[] hashTable;
     private int n, M, rehashTries = 0, countInserted = 0;
     UniversalHashing h;
