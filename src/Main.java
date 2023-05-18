@@ -1,47 +1,123 @@
 import ADT_HASH.HASH_N2;
-
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.BigInteger;
-import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-
+import ADT_HASH.IHASH;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Scanner;
 
 public class Main {
-
-
     public static void main(String[] args) {
-        int[] arr = generateDistinctArray(100);
-        HASH_N2 hashn2 = new HASH_N2(arr.length);
-        hashn2.batchInsert(arr);
-        System.out.println("nTries: " + hashn2.getNumberOfRebuild());
-    }
-
-    public static int[] generateDistinctArray(int size) {
-        if (size < 1) {
-            throw new IllegalArgumentException("Array size must be at least 1.");
-        }
-
-        int[] array = new int[size];
-        Set<Integer> set = new HashSet<>();
-
-        Random random = new Random();
-
-        for (int i = 0; i < size; i++) {
-            int num = Math.abs(random.nextInt()); // Generate a random number
-
-            // Check if the number is already in the set
-            while (set.contains(num)) {
-                num = Math.abs(random.nextInt()); // Generate a new random number
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  English Dictionary");
+        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
+        IHASH dictionary;
+        Scanner sc = new Scanner(System.in);
+        //initialization
+        while (true) {
+            try {
+                System.out.print("Enter the Hash Table type (N2/N): ");
+                String treeType = sc.nextLine();
+                System.out.print("Enter the table size: ");
+                String s = sc.nextLine();
+                int size = Integer.parseInt(s);
+                if (size > 0 && treeType.equalsIgnoreCase("N2")) {
+                    dictionary = new HASH_N2(size);
+                    System.out.println("HASH_N2 Table");
+                    break;
+                }
+//                else if (size > 0 && treeType.equalsIgnoreCase("N")) {
+////                    dictionary = new RB<String>();
+////                    System.out.println("rb");
+//                    break;
+//                }
+                else {
+                    System.out.println("Wrong Input");
+                }
+            } catch (Exception e) {
+                System.out.println("Wrong input type");
             }
-
-            array[i] = num; // Assign the unique number to the array
-            set.add(num); // Add the number to the set
+        }
+        //start operations
+        while (true){
+            System.out.println("The operations you can do with our dictionary:");
+            System.out.println("1- Insert\t\t2- Delete\t\t3- Search\t\t4- Batch Insert\t\t5- Batch Delete\t\t6- get number of rebuilds\t\t7- terminate the program");
+            System.out.print("Enter the operation order you want to do(1/2/3/4/5/6): ");
+            String operation = sc.nextLine();
+            if(operation.equals("1")){
+                System.out.print("please enter the string key you want to insert: ");
+                String key = sc.nextLine();
+                if(dictionary.insert(key.hashCode())){
+                    System.out.println("the key was inserted successfully");
+                }else{
+                    System.out.println("Error!! the key already exists");
+                }
+            } else if(operation.equals("2")){
+                System.out.print("please enter the string key you want to delete: ");
+                String key = sc.nextLine();
+                if(dictionary.delete(key.hashCode())){
+                    System.out.println("the key was deleted successfully");
+                }else{
+                    System.out.println("Error!! the key doesn't exist");
+                }
+            }else if(operation.equals("3")){
+                System.out.print("please enter the string key you want to search for: ");
+                String key = sc.nextLine();
+                if(dictionary.search(key.hashCode())){
+                    System.out.println("the key was found successfully");
+                }else{
+                    System.out.println("the key wasn't found");
+                }
+            }else if(operation.equals("4")){
+                int nSuccess = 0, nFail = 0;
+                while (true) {
+                    System.out.print("please enter the file path: ");
+                    String filePath = sc.nextLine();
+                    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            if (dictionary.insert(line.hashCode())) {
+                                nSuccess++;
+                            } else {
+                                nFail++;
+                            }
+                        }
+                        break;
+                    } catch (IOException e) {
+                        System.out.println("Please enter a valid file path");
+                    }
+                }
+                System.out.println("The number of successfully newly added strings: " + nSuccess);
+                System.out.println("The number of already existing strings: " + nFail);
+            }else if(operation.equals("5")){
+                int nSuccess = 0, nFail = 0;
+                while (true) {
+                    System.out.print("please enter the file path: ");
+                    String filePath = sc.nextLine();
+                    try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            if (dictionary.delete(line.hashCode())) {
+                                nSuccess++;
+                            } else {
+                                nFail++;
+                            }
+                        }
+                        break;
+                    } catch (IOException e) {
+                        System.out.println("Please enter a valid file path");
+                    }
+                }
+                System.out.println("The number of successfully deleted strings: " + nSuccess);
+                System.out.println("The number of non-existing strings: " + nFail);
+            }else if(operation.equals("6")){
+                System.out.println("number of tries is: " + dictionary.getNumberOfRebuild());
+            }else if(operation.equals("7")){
+                break;
+            }else {
+                System.out.println("Wrong input you should enter (1/2/3/4/5/6)");
+            }
+            System.out.println();
         }
 
-        return array;
     }
 }
 
