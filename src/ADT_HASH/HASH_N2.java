@@ -16,6 +16,7 @@ public class HASH_N2 implements IHASH {
         if(n == countInserted){
             return false;
         }
+
         int index = h.hash(key);
         if(hashTable[index] != null && hashTable[index] != key){
             rehashTries++;
