@@ -1,254 +1,215 @@
 package ADT_HASH;
-
 import UNIVERSAL.UniversalHashing;
-
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TreeSet;
 
-public class HASH_N {
-
+public class HASH_N <T extends Comparable>  {
     UniversalHashing l1Hash;
     UniversalHashing[] l2Hash;
     int[] entrySizes;
-    Integer[][] vectors = null;
-    int maxNumKeys = 0, numOfCollisions = 0;
-
-    // make constructor overload for string handling
-
-    public HASH_N(int maxNumKeys){
-        this.maxNumKeys = maxNumKeys;
-        vectors = new Integer[ maxNumKeys ][];
-        instantiateL2Entries();
-        L1_H_instance();
+    Integer[][] Tables = null;
+    int totalNumKeys , numOfCollisions = 0;
+    private final Class<T> type;
+    public Class<T> getType() {
+        return type;
     }
-
-    private void instantiateL2Entries() {
-        for (int i = 0; i < maxNumKeys; i++) {
-            vectors[i] = new Integer[0];
+    public HASH_N(int totalNumKeys, Class<T> type){
+        this.totalNumKeys = totalNumKeys;
+        Tables = new Integer[totalNumKeys][];
+        l2Hash = new UniversalHashing[totalNumKeys];
+        L1HashEdit();
+        entrySizes = new int[totalNumKeys];
+        this.type = type;
+    }
+    private void L1HashEdit(){
+        l1Hash = new UniversalHashing(totalNumKeys);
+    }
+    private boolean checkCorrectness(){
+        boolean flag = true;
+        int sigmaN = 0, sigmaNSquared = 0;
+        for(int i = 0; i< entrySizes.length; i++){
+            sigmaN += entrySizes[i];
+            sigmaNSquared += entrySizes[i]*entrySizes[i];
         }
+        return sigmaNSquared<2*sigmaN;
     }
-
-    private void L1_H_instance(){
-        l1Hash = new UniversalHashing(maxNumKeys);
+    private void L2HashEdit(int i){
+        l2Hash[i] = new UniversalHashing(entrySizes[i] * entrySizes[i]);
     }
+    private Integer[] changeToInteger(T[] elementToInsert){
 
-//    private void setEntrySizes(int[] insertedKeys){
-//        entrySizes = new int[ this.maxNumKeys ];
-//        Arrays.fill(entrySizes, 0);
-//
-//        // previous values.
-//        if( vectors != null ) {
-//            for (int i = 0; i < maxNumKeys; i++) {
-//                for (int j = 0; j < vectors[i].length; j++) {
-//                    if( vectors[i][j] == null )continue;
-//                    entrySizes[ l1Hash.hash( vectors[i][j] ) ]++;
-//                }
-//            }
-//        }
-//
-//        // new inserted values.
-//        for (int i = 0; i < insertedKeys.length; i++) {
-//            entrySizes[ l1Hash.hash( insertedKeys[i] ) ]++;
-//        }
-//
-//
-//    }
-//
-//    private void L2_H_instances(){
-//        for (int i = 0; i < maxNumKeys; i++) {
-//            l2Hash[i] = new UniversalHashing(entrySizes[i] * entrySizes[i]);
-//        }
-//    }
-//
-//
-//
-//    private void fillNewTable(int[] insertedKeys){
-//
-//        Integer[][] newVectors = new Integer[ maxNumKeys ][];
-//
-//        // previous values.
-//        int rowEntry, colEntry;
-//        if( vectors != null ){
-//            for (int i = 0; i < maxNumKeys; i++) {
-//                for (int j = 0; j < vectors[i].length; j++) {
-//                    if( vectors[i][j] == null )continue;
-//                    rowEntry = l1Hash.hash( vectors[i][j] );
-//                    colEntry = l2Hash[rowEntry].hash( vectors[i][j] );
-//                    // no collisions
-//                    if( newVectors[rowEntry][colEntry] == null ){
-//                        newVectors[rowEntry][colEntry] = vectors[i][j];
-//                    }
-//                    // yeh collisions
-//                    else {
-//                        collisionHandle(rowEntry, newVectors, vectors[i][j]);
-//                    }
-//                }
-//            }
-//        }
-//
-//        for (int i = 0; i < insertedKeys.length; i++) {
-//            rowEntry = l1Hash.hash( insertedKeys[i] );
-//            colEntry = l2Hash[rowEntry].hash( insertedKeys[i] );
-//            // no collisions
-//            if( newVectors[rowEntry][colEntry] == null ){
-//                newVectors[rowEntry][colEntry] = insertedKeys[i];
-//            }
-//            // yeh collisions
-//            else {
-//                collisionHandle(rowEntry, newVectors, insertedKeys[i]);
-//            }
-//        }
-//
-//
-//
-//    }
-//
-//    private void collisionHandle(int rowEntry, Integer[][] newVectors, int collisionPivot) {
-//        boolean collision = true;
-//        int colEntry;
-//        while(collision){
-//            numOfCollisions++;
-//            collision = false;
-//            L2HashEdit(rowEntry);
-//            Integer[] newInnerTable = new Integer[ vectors[rowEntry].length ];
-//            for (int k = 0; k < newInnerTable.length; k++) {
-//                if( newVectors[rowEntry][k] == null ) continue;
-//                colEntry = l2Hash[rowEntry].hash( newVectors[rowEntry][k] );
-//                if( newInnerTable[colEntry] != null ){
-//                    collision = true;
-//                    break;
-//                } else {
-//                    newInnerTable[colEntry] = newVectors[rowEntry][k];
-//                }
-//            }
-//
-//            colEntry = l2Hash[rowEntry].hash( collisionPivot );
-//            if( newInnerTable[colEntry] != null ){
-//                collision = true;
-//            } else {
-//                newInnerTable[colEntry] = collisionPivot;
-//            }
-//        }
-//    }
+        if(getType().getSimpleName().equals("String")){
+            Integer []element = new Integer[elementToInsert.length];
+            for(int i = 0; i < elementToInsert.length;i++){
+                element[i] = elementToInsert.hashCode();
+            }
+            return element;
+        }
+        return (Integer[]) elementToInsert;
+    }
+    private boolean insert(T elementToInsert){
+        T[] temp = (T[]) Array.newInstance(type, 1);
+        temp[0] = elementToInsert;
+        Integer[] element = changeToInteger(temp);
+        return insertionDirector(element) == 1;
+    }
+    public int batchInsert(T[] elementToInsert){
+        Integer [] elementsToBeInserted = changeToInteger(elementToInsert);
+        return insertionDirector(elementsToBeInserted);
 
-    private Integer[] l1EntryEdit(int rowEntry, Integer[] valueToInsert) {
+    }
+    private int insertionDirector(Integer[] elementsToInsert){
+        int count = 0;
+//        for (int i = 0; i < elementsToInsert.length; i++)
+//            entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+
+        for (int i = 0 ; i<elementsToInsert.length;i++) {
+            int outerIndex = this.l1Hash.hash(elementsToInsert[i]);
+            if (Tables[outerIndex] == null) {
+                entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+                Rehash(outerIndex, elementsToInsert[i]);
+            } else if (elementsToInsert[i].equals(Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])])) ;
+
+            else if (Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])] == null) {
+                Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])] = elementsToInsert[i];
+                count++;
+                entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+            } else {
+                if(checkCorrectness()) {
+                    entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+                    Rehash(outerIndex, elementsToInsert[i]);
+                }
+                else {
+                    entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+                    TotalRehash(elementsToInsert[i]);
+                }
+            }
+        }
+        return count;
+    }
+    private void TotalRehash(Integer elem){
+        List<Integer> allElements = new ArrayList<Integer>();
+
+        for(int i = 0;i<Tables.length;i++){
+            if(Tables[i] != null) {
+                for (int j = 0; j < Tables[i].length; j++){
+                    if(Tables[i][j] != null)
+                        allElements.add(Tables[i][j]);
+                }
+            }
+        }
+        allElements.add(elem);
+
+        do {
+            Integer[][] newTables = new Integer[totalNumKeys][];
+            Integer[][] oldTables = Tables;
+            entrySizes = new int[totalNumKeys];
+            Tables = newTables;
+            L1HashEdit();
+            insertionDirector((Integer[])allElements.toArray());
+        } while(!checkCorrectness());
+    }
+    private void Rehash(int outerIndex , int element){
+        if(Tables[outerIndex]!=null){
+        System.out.println(entrySizes[outerIndex]);
+        System.out.println(Tables[outerIndex].length);}
+        Integer[] elementsInInnerTable = new Integer[entrySizes[outerIndex]];
+        int currIndex = 0;
+        if(Tables[outerIndex] != null){
+            for (int i = 0; i < Tables[outerIndex].length; i++) {
+                if(Tables[outerIndex][i] != null){
+                    elementsInInnerTable[currIndex++] = Tables[outerIndex][i];
+                }
+            }
+        }
+        if(Tables[outerIndex]!=null){
+            System.out.println(currIndex);}
+
+        elementsInInnerTable[currIndex] = element;
+        Tables[outerIndex] = HandlingInputCornerCases(outerIndex , elementsInInnerTable);
+    }
+    private Integer[] HandlingInputCornerCases(int outerIndex, Integer[] valueToInsert) {
         boolean collision = true;
-        int colEntry;
-        Integer[] l2Arr = new Integer[ valueToInsert.length * valueToInsert.length ];
-
-        numOfCollisions--;
+        int innerIndex;
+        Integer[] l2Arr = new Integer[ entrySizes[outerIndex] * entrySizes[outerIndex] ];
+        L2HashEdit(outerIndex);
         while(collision){
+            System.out.println("hena");
+
             // variable edit
             numOfCollisions++;
+            L2HashEdit(outerIndex);
             collision = false;
-
+            System.out.println(outerIndex);
+            System.out.println("valueToInsert"+valueToInsert.length);
+            for(int i=0;i<Tables.length;i++){
+                if(Tables[i]!=null) {
+                    for (int j = 0; j < Tables[i].length; j++) {
+                        System.out.print(Tables[i][j] + " ");
+                    }
+                    System.out.println();
+                }
+            }
+            for(int i=0;i<valueToInsert.length;i++){
+                System.out.print("value: "+valueToInsert[i]+" ");
+            }
+            System.out.println();
+            for(int i=0;i<entrySizes.length;i++){
+                System.out.print("size: "+entrySizes[i]+" ");
+            }
+            System.out.println();
+            System.out.println("inner level size"+ entrySizes[outerIndex]*entrySizes[outerIndex]);
+            System.out.println();
             for (int k = 0; k < valueToInsert.length; k++) {
-                colEntry = l2Hash[rowEntry].hash( valueToInsert[k] );
-                if( l2Arr[colEntry] != null ){
+                innerIndex = l2Hash[outerIndex].hash(valueToInsert[k]);
 
-                    // duplicate case
-                    if( valueToInsert[k] == l2Arr[colEntry] )continue;
-
+                if( l2Arr[innerIndex] != null ){
                     // collision case
                     collision = true;
                     break;
 
                 } else {
-                    l2Arr[colEntry] = valueToInsert[k];
+                    l2Arr[innerIndex] = valueToInsert[k];
                 }
             }
         }
         return l2Arr;
     }
-
-    private void L2HashEdit(int i){
-        l2Hash[i] = new UniversalHashing(entrySizes[i] * entrySizes[i]);
+    public boolean delete(T elementToDelete){
+        T[] temp = (T[]) Array.newInstance(type, 1);
+        temp[0] = elementToDelete;
+        Integer[] element = changeToInteger(temp);
+        return deleteDirector(element) == 1;
     }
-
-    private TreeSet<Integer> updatedEntriesFun(Integer[] elementToInsert){
-        TreeSet<Integer> updatedEntries = new TreeSet<>();
-        int rowEntry;
-        for (int i = 0; i < elementToInsert.length; i++) {
-            rowEntry = l1Hash.hash( elementToInsert[i] );
-            updatedEntries.add(rowEntry);
-        }
-        return updatedEntries;
+    public int batchDelete(T[] elementToDelete){
+        Integer [] elementsToBeDeleted = changeToInteger(elementToDelete);
+        return deleteDirector(elementsToBeDeleted);
     }
-
-    private List<Integer>[] getEditedList(Integer[] elementToInsert, TreeSet<Integer> updatedEntries){
-        int rowEntry;
-        List<Integer>[] arrEdited = new ArrayList[maxNumKeys];
-        // previous known data
-        for (Integer entry :updatedEntries) {
-            for (Integer elem :vectors[entry]) {
-                if( elem == null )continue;
-                arrEdited[entry].add(elem);
+    private int deleteDirector(Integer[] elementToDelete){
+        int count = 0;
+        try {
+            for(int i = 0 ; i <elementToDelete.length ; i++){
+                int outerIndex = this.l1Hash.hash(elementToDelete[i]);
+                if(elementToDelete[i] == Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])]){
+                    Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])] = null;
+                    count++;
+                }
             }
         }
-
-        // new data
-        int colEntry;
-        for (int i = 0; i < elementToInsert.length; i++) {
-            rowEntry = l1Hash.hash( elementToInsert[i] );
-            colEntry = l2Hash[rowEntry].hash( elementToInsert[i] );
-
-            // duplicates.
-            if( vectors[rowEntry][colEntry] == elementToInsert[i] )continue;
-            arrEdited[rowEntry].add(elementToInsert[i]);
+        catch (Exception e){}
+        return count;
+    }
+    public boolean Search(int elementToSearch){
+        int outerIndex = this.l1Hash.hash(elementToSearch);
+        try {
+            if(elementToSearch == Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)]){
+                return true;
+            }
         }
-        return arrEdited;
-    }
-
-    private void insertionDirector(Integer[] elementToInsert){
-        // values in updated l1 entries
-        TreeSet<Integer> updatedEntries = updatedEntriesFun(elementToInsert);
-
-        List<Integer>[] arrEdited = getEditedList(elementToInsert, updatedEntries);
-
-        // iterate on each one of updated entries.
-        for (Integer entry :updatedEntries) {
-
-            // edit entry size
-            entrySizes[entry] = arrEdited[entry].size();
-
-            // create l2 hash function.
-            L2HashEdit(entry);
-
-            // edit index i in l1 table.
-            vectors[entry] = l1EntryEdit(entry, arrEdited[entry].toArray(new Integer[0]));
-
+        catch (Exception e){
+            return false;
         }
-
-        // check sigma ni^2 < 2 * n
-        if( needRehashing() ){
-
-        }
+        return false;
     }
-
-    public boolean insert(int elementToInsert){
-        insertionDirector(new Integer[] { elementToInsert });
-        return true;
-    }
-    public boolean batchInsert(Integer[] elementToInsert){
-        insertionDirector(elementToInsert);
-        return true;
-    }
-    public boolean delete(int elementToDelete){return true;}
-    public boolean batchDelete(int[] elementToDelete){return true;}
-
-    private boolean needRehashing(){
-        long totalEntrySize = 0, curNumKeys = 0;
-        for (int i = 0; i < maxNumKeys; i++) {
-            totalEntrySize += entrySizes[i] * entrySizes[i];
-            curNumKeys += entrySizes[i];
-        }
-        return totalEntrySize > 2 * curNumKeys;
-    }
-
-    // assumptions:
-    // N given in constructor is the maximum size for L1 overall time the object is created.
-    // the number of insertions and deletions are very small.
-    // types available are string and int.
-
 }
