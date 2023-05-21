@@ -8,10 +8,22 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        HASH_N<Integer>ll =new HASH_N<Integer>(8,Integer.class);
-        Integer[] array={1,11,10,20,3,5,4,7};
+        HASH_N<Integer>ll =new HASH_N<Integer>((int)1e6,Integer.class);
+        Integer[] array= new Integer[1<<(int)Math.ceil(Math.log((int)1e6) / Math.log(2))];
+        for(int i=0;i<array.length;i++){
+            array[i]=i+1;
+        }
         ll.batchInsert(array);
-        System.out.println(ll.Search(11));
+
+        for(int i = 0 ; i < 10 ; i++){
+            ll.delete(array.length-i);
+        }
+
+
+        for(int i=0;i<array.length;i++){
+            System.out.println(ll.Search(array[i]));
+        }
+
 //        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t  English Dictionary");
 //        System.out.println("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
 //        IHASH dictionary;

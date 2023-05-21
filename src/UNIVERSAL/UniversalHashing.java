@@ -11,7 +11,7 @@ public class UniversalHashing {
     //int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
     //or int M = (int)Math.pow(2,Math.ceil(Math.log(n) / Math.log(2)));
     public UniversalHashing(int M){
-        int b = ( int)Math.ceil(Math.log(M) / Math.log(2));         //number of bits to represent h(x)
+        int b = (int)Math.ceil(Math.log(M) / Math.log(2));         //number of bits to represent h(x)
         h = new int[b][u];
         hashTableLength = M;
         Random random = new Random();
