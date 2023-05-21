@@ -108,9 +108,9 @@ class HASH_N2Test{
 
     @Test
     void test3(){
-        hashTable = new HASH_N2<Integer>(1000, Integer.class);
-        Integer[] keys = new Integer[1000];
-        for (int i = 0; i < 1000; i++) {
+        hashTable = new HASH_N2<Integer>(20000, Integer.class);
+        Integer[] keys = new Integer[20000];
+        for (int i = 0; i < 20000; i++) {
             keys[i] = i;
         }
 

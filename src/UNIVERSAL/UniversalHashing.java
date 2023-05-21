@@ -7,11 +7,12 @@ public class UniversalHashing {
     private int[][] h;
     private int hashTableLength;
     private int u = 32; //number of bits for the max inserted key
+    private int b;
 
     //int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
     //or int M = (int)Math.pow(2,Math.ceil(Math.log(n) / Math.log(2)));
     public UniversalHashing(int M){
-        int b = (int)Math.ceil(Math.log(M) / Math.log(2));         //number of bits to represent h(x)
+        b = (int)(Math.log(M) / Math.log(2));         //number of bits to represent h(x)
         h = new int[b][u];
         hashTableLength = M;
         Random random = new Random();
@@ -20,6 +21,12 @@ public class UniversalHashing {
                 h[i][j] = random.nextInt(2);            //generates 0/1 randomly
             }
         }
+    }
+    private void printArr(int[] arr){
+        for(int i = 0; i < arr.length; i++){
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
     }
 
     public int hash(int x){

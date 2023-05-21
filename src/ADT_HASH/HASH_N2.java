@@ -14,6 +14,7 @@ public class HASH_N2 <T extends Comparable<T>> implements IHASH<T> {
     }
     public HASH_N2(int N, Class<T> type){
         n = N;
+        System.out.println("N: " + n);
         M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
         hashTable = new Integer[M];
         h = new UniversalHashing(M);
