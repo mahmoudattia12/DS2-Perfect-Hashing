@@ -3,6 +3,9 @@ package ADT_HASH;
 import org.junit.jupiter.api.Test;
 
 import java.lang.instrument.Instrumentation;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -201,9 +204,123 @@ class HASH_N2Test {
         assertTrue(hashTable.getNumberOfRebuild() <= 2);
     }
 
+    //testing main dictionary with n2
+    @Test
+    void test6(){
+        int N = 20;
+        hashTable = new HASH_N2(N);
+        assertTrue(hashTable.insert("cat".hashCode()));
+        assertTrue(hashTable.insert("car".hashCode()));
+        assertTrue(hashTable.insert("dog".hashCode()));
+        assertTrue(hashTable.insert("elephant".hashCode()));
+        assertTrue(hashTable.insert("ds".hashCode()));
+        assertFalse(hashTable.insert("dog".hashCode()));
 
+        String[] keys = {"a", "aa", "aaa", "b", "bb", "a", "bbb", "c", "cc","b", "ccc", "d", "dd", "ddd", "e","d" ,"ee", "eee"};
+        int[] arr = new int[keys.length];
+        for(int i = 0; i < keys.length; i++){
+            arr[i] = keys[i].hashCode();
+        }
+        //inserting with batch insert with duplicated keys
+        assertTrue(hashTable.batchInsert(arr) == 15);
+        //test insert more than the allowed capacity
+        assertFalse(hashTable.insert("apple".hashCode()));
+        assertFalse(hashTable.insert("banana".hashCode()));
 
+        for(int i = 0; i < keys.length; i++){
+            assertTrue(hashTable.search(arr[i]));
+        }
+        assertFalse(hashTable.search("apple".hashCode()));
 
+        assertTrue(hashTable.delete("aa".hashCode()));
+        assertFalse(hashTable.search("aa".hashCode()));
 
+        assertTrue(hashTable.batchDelete(arr) == 14);
 
+        for(int i = 0; i < arr.length; i++){
+            assertFalse(hashTable.search(arr[i]));
+        }
+        assertTrue(hashTable.search("ds".hashCode()));
+        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+    }
+
+    //testing bigger main cli scenario
+    @Test
+    void test7(){
+        int N = 1010;
+        hashTable = new HASH_N2(N);
+        int[] keys = generateStrings(1000);
+        assertTrue(hashTable.batchInsert(keys) == 1000);
+
+        assertTrue(hashTable.insert("apple".hashCode()));
+        assertTrue(hashTable.insert("mac".hashCode()));
+        assertTrue(hashTable.insert("linux".hashCode()));
+        assertTrue(hashTable.insert("windows".hashCode()));
+        assertFalse(hashTable.insert("mac".hashCode()));
+
+        assertTrue(hashTable.search("linux".hashCode()));
+        assertFalse(hashTable.search("zzz".hashCode()));
+        assertTrue(hashTable.delete("mac".hashCode()));
+        assertFalse(hashTable.search("mac".hashCode()));
+
+        for(int i = 0; i < keys.length; i++){
+            assertTrue(hashTable.search(keys[i]));
+        }
+        assertTrue(hashTable.batchDelete(keys) == 1000);
+        for(int i = 0; i < keys.length; i++){
+            assertFalse(hashTable.search(keys[i]));
+        }
+        assertTrue(hashTable.delete("apple".hashCode()));
+        assertFalse(hashTable.search("apple".hashCode()));
+
+        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+    }
+
+    //much bigger main test
+    @Test
+    void test8(){
+        int N = 10010;
+        hashTable = new HASH_N2(N);
+        int[] keys = generateStrings(10000);
+        assertTrue(hashTable.batchInsert(keys) == 10000);
+
+        assertTrue(hashTable.insert("ds".hashCode()));
+        assertTrue(hashTable.insert("os".hashCode()));
+        assertTrue(hashTable.insert("control".hashCode()));
+        assertTrue(hashTable.insert("paradigms".hashCode()));
+        assertFalse(hashTable.insert("os".hashCode()));
+
+        assertTrue(hashTable.search("control".hashCode()));
+        assertFalse(hashTable.search("zzz".hashCode()));
+        assertTrue(hashTable.delete("os".hashCode()));
+        assertFalse(hashTable.search("os".hashCode()));
+
+        for(int i = 0; i < keys.length; i++){
+            assertTrue(hashTable.search(keys[i]));
+        }
+        assertTrue(hashTable.batchDelete(keys) == 10000);
+        for(int i = 0; i < keys.length; i++){
+            assertFalse(hashTable.search(keys[i]));
+        }
+        assertTrue(hashTable.delete("control".hashCode()));
+        assertFalse(hashTable.search("control".hashCode()));
+        System.out.println(hashTable.getNumberOfRebuild());
+        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+    }
+
+    private int[] generateStrings(int size){
+        Set<String> distinctStrings = new HashSet<>();
+
+        while (distinctStrings.size() < size) {
+            String newString = UUID.randomUUID().toString();
+            distinctStrings.add(newString);
+        }
+        String[] distinctStringsArray = new String[distinctStrings.size()];
+        distinctStrings.toArray(distinctStringsArray);
+        int[] keys = new int[distinctStrings.size()];
+        for(int i = 0; i < distinctStringsArray.length; i++){
+            keys[i] = distinctStringsArray[i].hashCode();
+        }
+        return keys;
+    }
 }

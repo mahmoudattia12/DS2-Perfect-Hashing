@@ -91,4 +91,8 @@ public class HASH_N2 implements IHASH {
     public int getNumberOfRebuild(){
         return rehashTries;
     }
+
+    public int getSpace(){
+        return M;
+    }
 }
