@@ -1,20 +1,18 @@
 package ADT_HASH;
 
 import org.junit.jupiter.api.Test;
-
-import java.lang.instrument.Instrumentation;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class HASH_N2Test {
+class HASH_N2Test{
 
-    private HASH_N2 hashTable;
+    private HASH_N2<Integer> hashTable;
     @Test
     public void testInsert() {
-        hashTable = new HASH_N2(10);
+        hashTable = new HASH_N2<Integer>(10, Integer.class);
         // Test inserting a key that already exists
         hashTable.insert(5);
         assertFalse(hashTable.insert(5));
@@ -24,12 +22,12 @@ class HASH_N2Test {
             assertTrue(hashTable.insert(i));
         }
         assertFalse(hashTable.insert(11));
-        System.out.println(hashTable.getNumberOfRebuild());
+        System.out.println(hashTable.getNumOfCollisions());
     }
 
     @Test
     public void testDeleteSearch() {
-        hashTable = new HASH_N2(10);
+        hashTable = new HASH_N2<Integer>(10, Integer.class);
         // Test searching deleting a key that doesn't exist
         assertFalse(hashTable.search(5));
         assertFalse(hashTable.delete(5));
@@ -44,9 +42,9 @@ class HASH_N2Test {
 
     @Test
     public void testBatchInsertDelete() {
-        hashTable = new HASH_N2(20);
+        hashTable = new HASH_N2<Integer>(20, Integer.class);
         // Test batch inserting keys with some duplicates
-        int[] keys = {7, 1, 2, 8, 3, 4, 5, 5, 6, 7, 8, 9};
+        Integer[] keys = {7, 1, 2, 8, 3, 4, 5, 5, 6, 7, 8, 9};
         assertEquals(9, hashTable.batchInsert(keys));
         for(int i : keys){
             assertTrue(hashTable.search(i));
@@ -55,11 +53,11 @@ class HASH_N2Test {
         for(int i : keys){
             assertFalse(hashTable.search(i));
         }
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
     @Test
     void test1(){
-        HASH_N2 hashn2 = new HASH_N2(20);
+        HASH_N2 hashn2 = new HASH_N2<Integer>(20, Integer.class);
         //check insert
         assertTrue(hashn2.insert(10));
         assertTrue(hashn2.insert(100));
@@ -72,19 +70,19 @@ class HASH_N2Test {
         assertTrue(hashn2.delete(100));
         assertFalse(hashn2.search(100));
         //check batch insert
-        int[] arr = {1, 20, 200, 2000, 30, 40, 50, 10, 100, 1000};
+        Integer[] arr = {1, 20, 200, 2000, 30, 40, 50, 10, 100, 1000};
         assertTrue(hashn2.batchInsert(arr) == 8);
         //check batch delete
-        int[] arr2 = {20, 200, 1, 10, 333, 444, 555, 777,8888};
+        Integer[] arr2 = {20, 200, 1, 10, 333, 444, 555, 777,8888};
         assertTrue(hashn2.batchDelete(arr2) == 4);
-        System.out.println(hashn2.getNumberOfRebuild());
-        assertTrue(hashn2.getNumberOfRebuild() <= 2);
+        System.out.println(hashn2.getNumOfCollisions());
+        assertTrue(hashn2.getNumOfCollisions() <= 2);
     }
 
     @Test
     void test2(){
-        HASH_N2 hashTable = new HASH_N2(50);
-        int[] keys = {9, 11, 15, 2, 12, 10, 6, 13, 5, 14, 7, 4, 1, 3, 8, 16, 23, 18, 19, 20, 17, 25, 22, 21, 24, 26, 27, 28, 30, 29, 37, 38, 31, 35, 40, 39, 36, 34, 33, 32, 42, 41, 47, 48, 45, 43, 50, 49, 46, 44};
+        HASH_N2 hashTable = new HASH_N2<Integer>(50, Integer.class);
+        Integer[] keys = {9, 11, 15, 2, 12, 10, 6, 13, 5, 14, 7, 4, 1, 3, 8, 16, 23, 18, 19, 20, 17, 25, 22, 21, 24, 26, 27, 28, 30, 29, 37, 38, 31, 35, 40, 39, 36, 34, 33, 32, 42, 41, 47, 48, 45, 43, 50, 49, 46, 44};
         // Insert keys
         for (int key : keys) {
             assertTrue(hashTable.insert(key));
@@ -104,14 +102,14 @@ class HASH_N2Test {
         for (int key : keys) {
             assertFalse(hashTable.search(key));
         }
-        System.out.println(hashTable.getNumberOfRebuild());
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        System.out.println(hashTable.getNumOfCollisions());
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     @Test
     void test3(){
-        hashTable = new HASH_N2(1000);
-        int[] keys = new int[1000];
+        hashTable = new HASH_N2<Integer>(1000, Integer.class);
+        Integer[] keys = new Integer[1000];
         for (int i = 0; i < 1000; i++) {
             keys[i] = i;
         }
@@ -135,13 +133,13 @@ class HASH_N2Test {
         for (int key : keys) {
             assertFalse(hashTable.search(key));
         }
-        System.out.println(hashTable.getNumberOfRebuild());
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        System.out.println(hashTable.getNumOfCollisions());
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     @Test
     void test4(){
-        hashTable = new HASH_N2(5);
+        hashTable = new HASH_N2<Integer>(5, Integer.class);
         // Insert 5 elements
         assertTrue(hashTable.insert(1));
         assertTrue(hashTable.insert(2));
@@ -160,7 +158,7 @@ class HASH_N2Test {
         assertFalse(hashTable.search(8));
 
         // Batch delete non-existing keys
-        int[] nonExistingKeys = {6, 7, 8};
+        Integer[] nonExistingKeys = {6, 7, 8};
         assertEquals(0, hashTable.batchDelete(nonExistingKeys));
 
         // Delete existing keys
@@ -174,7 +172,7 @@ class HASH_N2Test {
         assertFalse(hashTable.search(5));
 
         // Batch delete remaining keys
-        int[] remainingKeys = {2, 4};
+        Integer[] remainingKeys = {2, 4};
         assertEquals(2, hashTable.batchDelete(remainingKeys));
 
         // Verify the hash table is empty
@@ -183,14 +181,14 @@ class HASH_N2Test {
         }
 
         // Check the number of rehash tries
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     @Test
     void test5(){
         int N = 10000;
-        hashTable = new HASH_N2(N);
-        int[] arr = new int[N];
+        hashTable = new HASH_N2<Integer>(N, Integer.class);
+        Integer[] arr = new Integer[N];
         for(int i = -5000; i < 5000; i++){
             arr[i+N/2] = i*5;
         }
@@ -200,68 +198,64 @@ class HASH_N2Test {
             assertTrue(hashTable.search(i));
         }
         assertEquals(hashTable.batchDelete(arr), N);
-        System.out.println(hashTable.getNumberOfRebuild());
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        System.out.println(hashTable.getNumOfCollisions());
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     //testing main dictionary with n2
     @Test
     void test6(){
         int N = 20;
-        hashTable = new HASH_N2(N);
-        assertTrue(hashTable.insert("cat".hashCode()));
-        assertTrue(hashTable.insert("car".hashCode()));
-        assertTrue(hashTable.insert("dog".hashCode()));
-        assertTrue(hashTable.insert("elephant".hashCode()));
-        assertTrue(hashTable.insert("ds".hashCode()));
-        assertFalse(hashTable.insert("dog".hashCode()));
+        HASH_N2 hashTable = new HASH_N2<String>(N, String.class);
+        assertTrue(hashTable.insert("cat"));
+        assertTrue(hashTable.insert("car"));
+        assertTrue(hashTable.insert("dog"));
+        assertTrue(hashTable.insert("elephant"));
+        assertTrue(hashTable.insert("ds"));
+        assertFalse(hashTable.insert("dog"));
 
         String[] keys = {"a", "aa", "aaa", "b", "bb", "a", "bbb", "c", "cc","b", "ccc", "d", "dd", "ddd", "e","d" ,"ee", "eee"};
-        int[] arr = new int[keys.length];
-        for(int i = 0; i < keys.length; i++){
-            arr[i] = keys[i].hashCode();
-        }
         //inserting with batch insert with duplicated keys
-        assertTrue(hashTable.batchInsert(arr) == 15);
+        assertTrue(hashTable.batchInsert(keys) == 15);
         //test insert more than the allowed capacity
-        assertFalse(hashTable.insert("apple".hashCode()));
-        assertFalse(hashTable.insert("banana".hashCode()));
+        assertFalse(hashTable.insert("apple"));
+        assertFalse(hashTable.insert("banana"));
 
         for(int i = 0; i < keys.length; i++){
-            assertTrue(hashTable.search(arr[i]));
+            assertTrue(hashTable.search(keys[i]));
         }
-        assertFalse(hashTable.search("apple".hashCode()));
+        assertFalse(hashTable.search("apple"));
 
-        assertTrue(hashTable.delete("aa".hashCode()));
-        assertFalse(hashTable.search("aa".hashCode()));
+        assertTrue(hashTable.delete("aa"));
+        assertFalse(hashTable.search("aa"));
 
-        assertTrue(hashTable.batchDelete(arr) == 14);
+        assertTrue(hashTable.batchDelete(keys) == 14);
 
-        for(int i = 0; i < arr.length; i++){
-            assertFalse(hashTable.search(arr[i]));
+        for(int i = 0; i < keys.length; i++){
+            assertFalse(hashTable.search(keys[i]));
         }
-        assertTrue(hashTable.search("ds".hashCode()));
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        assertTrue(hashTable.search("ds"));
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     //testing bigger main cli scenario
     @Test
     void test7(){
         int N = 1010;
-        hashTable = new HASH_N2(N);
-        int[] keys = generateStrings(1000);
+        HASH_N2 hashTable = new HASH_N2<String>(N, String.class);
+        String[] keys = generateStrings(1000);
         assertTrue(hashTable.batchInsert(keys) == 1000);
 
-        assertTrue(hashTable.insert("apple".hashCode()));
-        assertTrue(hashTable.insert("mac".hashCode()));
-        assertTrue(hashTable.insert("linux".hashCode()));
-        assertTrue(hashTable.insert("windows".hashCode()));
-        assertFalse(hashTable.insert("mac".hashCode()));
+        assertTrue(hashTable.insert("apple"));
+        assertTrue(hashTable.insert("mac"));
+        assertTrue(hashTable.insert("linux"));
+        assertTrue(hashTable.insert("windows"));
+        assertFalse(hashTable.insert("mac"));
 
-        assertTrue(hashTable.search("linux".hashCode()));
-        assertFalse(hashTable.search("zzz".hashCode()));
-        assertTrue(hashTable.delete("mac".hashCode()));
-        assertFalse(hashTable.search("mac".hashCode()));
+        assertTrue(hashTable.search("linux"));
+        assertFalse(hashTable.search("zzz"));
+        assertTrue(hashTable.delete("mac"));
+        assertFalse(hashTable.search("mac"));
 
         for(int i = 0; i < keys.length; i++){
             assertTrue(hashTable.search(keys[i]));
@@ -270,30 +264,30 @@ class HASH_N2Test {
         for(int i = 0; i < keys.length; i++){
             assertFalse(hashTable.search(keys[i]));
         }
-        assertTrue(hashTable.delete("apple".hashCode()));
-        assertFalse(hashTable.search("apple".hashCode()));
+        assertTrue(hashTable.delete("apple"));
+        assertFalse(hashTable.search("apple"));
 
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
     //much bigger main test
     @Test
     void test8(){
         int N = 10010;
-        hashTable = new HASH_N2(N);
-        int[] keys = generateStrings(10000);
+        HASH_N2 hashTable = new HASH_N2<String>(N, String.class);
+        String[] keys = generateStrings(10000);
         assertTrue(hashTable.batchInsert(keys) == 10000);
 
-        assertTrue(hashTable.insert("ds".hashCode()));
-        assertTrue(hashTable.insert("os".hashCode()));
-        assertTrue(hashTable.insert("control".hashCode()));
-        assertTrue(hashTable.insert("paradigms".hashCode()));
-        assertFalse(hashTable.insert("os".hashCode()));
+        assertTrue(hashTable.insert("ds"));
+        assertTrue(hashTable.insert("os"));
+        assertTrue(hashTable.insert("control"));
+        assertTrue(hashTable.insert("paradigms"));
+        assertFalse(hashTable.insert("os"));
 
-        assertTrue(hashTable.search("control".hashCode()));
-        assertFalse(hashTable.search("zzz".hashCode()));
-        assertTrue(hashTable.delete("os".hashCode()));
-        assertFalse(hashTable.search("os".hashCode()));
+        assertTrue(hashTable.search("control"));
+        assertFalse(hashTable.search("zzz"));
+        assertTrue(hashTable.delete("os"));
+        assertFalse(hashTable.search("os"));
 
         for(int i = 0; i < keys.length; i++){
             assertTrue(hashTable.search(keys[i]));
@@ -302,13 +296,13 @@ class HASH_N2Test {
         for(int i = 0; i < keys.length; i++){
             assertFalse(hashTable.search(keys[i]));
         }
-        assertTrue(hashTable.delete("control".hashCode()));
-        assertFalse(hashTable.search("control".hashCode()));
-        System.out.println(hashTable.getNumberOfRebuild());
-        assertTrue(hashTable.getNumberOfRebuild() <= 2);
+        assertTrue(hashTable.delete("control"));
+        assertFalse(hashTable.search("control"));
+        System.out.println(hashTable.getNumOfCollisions());
+        assertTrue(hashTable.getNumOfCollisions() <= 2);
     }
 
-    private int[] generateStrings(int size){
+    private String[] generateStrings(int size){
         Set<String> distinctStrings = new HashSet<>();
 
         while (distinctStrings.size() < size) {
@@ -317,10 +311,6 @@ class HASH_N2Test {
         }
         String[] distinctStringsArray = new String[distinctStrings.size()];
         distinctStrings.toArray(distinctStringsArray);
-        int[] keys = new int[distinctStrings.size()];
-        for(int i = 0; i < distinctStringsArray.length; i++){
-            keys[i] = distinctStringsArray[i].hashCode();
-        }
-        return keys;
+        return distinctStringsArray;
     }
 }

@@ -1,10 +1,10 @@
 package ADT_HASH;
 
-public interface IHASH {
-    boolean insert(int key);
-    boolean search(int key);
-    boolean delete(int key);
-    int batchInsert(int[] list);
-    int batchDelete(int[] list);
-    int getNumberOfRebuild();
+public interface IHASH <T extends Comparable<T>> {
+    boolean insert(T key);
+    boolean search(T key);
+    boolean delete(T key);
+    int batchInsert(T[] list);
+    int batchDelete(T[] list);
+    int getNumOfCollisions();
 }
