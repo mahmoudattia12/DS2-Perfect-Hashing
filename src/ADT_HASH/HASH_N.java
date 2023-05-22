@@ -19,6 +19,13 @@ public class HASH_N <T extends Comparable>  {
     public int getNumOfOuterTableCollisions() {
         return numOfOuterTableCollisions;
     }
+    public int getSpace(){
+        int  sigmaNSquared = 0;
+        for(int i = 0; i< entrySizes.length; i++){
+            sigmaNSquared += entrySizes[i]*entrySizes[i];
+        }
+        return sigmaNSquared;
+    }
 
     public int getNumOfCollisions() {
         return numOfCollisions;
