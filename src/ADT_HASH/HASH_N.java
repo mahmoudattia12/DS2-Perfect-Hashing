@@ -10,16 +10,20 @@ public class HASH_N <T extends Comparable>  {
     int[] entrySizes;
 
     Integer[][] Tables = null;
-    int totalNumKeys , numOfCollisions = 0;
+    int totalNumKeys , numOfCollisions = 0, numOfOuterTableCollisions = 0;
     private final Class<T> type;
     public Class<T> getType() {
         return type;
     }
 
+    public int getNumOfOuterTableCollisions() {
+        return numOfOuterTableCollisions;
+    }
+
     public int getNumOfCollisions() {
         return numOfCollisions;
     }
-
+//m size of outer table
     public HASH_N(int totalNumKeys, Class<T> type){
         this.totalNumKeys = 1<<((int)Math.ceil(Math.log(totalNumKeys) / Math.log(2)));
         Tables = new Integer[this.totalNumKeys][];
@@ -38,13 +42,16 @@ public class HASH_N <T extends Comparable>  {
             sigmaN += entrySizes[i];
             sigmaNSquared += entrySizes[i]*entrySizes[i];
         }
-        return sigmaNSquared<2*sigmaN;
+        return sigmaNSquared<4*sigmaN;
     }
-    private void L2HashEdit(int i){
-        l2Hash[i] = new UniversalHashing(entrySizes[i] * entrySizes[i]);
-    }
-    private Integer[] changeToInteger(T[] elementToInsert){
 
+    private void L2HashEdit(int i){
+
+        l2Hash[i] = new UniversalHashing(1<<((int)Math.ceil(Math.log(entrySizes[i] * entrySizes[i]) / Math.log(2))));
+
+    }
+
+    private Integer[] changeToInteger(T[] elementToInsert){
         if(getType().getSimpleName().equals("String")){
             Integer []element = new Integer[elementToInsert.length];
             for(int i = 0; i < elementToInsert.length;i++){
@@ -54,7 +61,7 @@ public class HASH_N <T extends Comparable>  {
         }
         return (Integer[]) elementToInsert;
     }
-    private boolean insert(T elementToInsert){
+    public boolean insert(T elementToInsert){
         T[] temp = (T[]) Array.newInstance(type, 1);
         temp[0] = elementToInsert;
         Integer[] element = changeToInteger(temp);
@@ -62,36 +69,44 @@ public class HASH_N <T extends Comparable>  {
     }
     public int batchInsert(T[] elementToInsert){
         Integer [] elementsToBeInserted = changeToInteger(elementToInsert);
-        return insertionDirector(elementsToBeInserted);
-
+        int success = insertionDirector(elementsToBeInserted);
+        if(checkCorrectness()) TotalRehash();
+        return success;
     }
     private int insertionDirector(Integer[] elementsToInsert){
         int count = 0;
-//        for (int i = 0; i < elementsToInsert.length; i++)
-//            entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+        for (int i = 0; i < elementsToInsert.length; i++) {
+         if(!Search(elementsToInsert[i])) {
+             entrySizes[this.l1Hash.hash((int)elementsToInsert[i])]++;
+         }
+         }
 
         for (int i = 0 ; i<elementsToInsert.length;i++) {
             int outerIndex = this.l1Hash.hash(elementsToInsert[i]);
+            int innerIndex = 0;
+            if(Tables[outerIndex]!= null)
+                innerIndex = this.l2Hash[outerIndex].hash(elementsToInsert[i]);
             if (Tables[outerIndex] == null) {
-                entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
-                Rehash(outerIndex, elementsToInsert[i]);
-            } else if (elementsToInsert[i].equals(Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])])) ;
-
-            else if (Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])] == null) {
-                Tables[outerIndex][this.l2Hash[outerIndex].hash(elementsToInsert[i])] = elementsToInsert[i];
+                L2HashEdit(outerIndex);
+                Integer[] innerTable = new Integer[1<<((int)Math.ceil(Math.log(entrySizes[outerIndex] * entrySizes[outerIndex]) / Math.log(2)))];
+                innerTable[this.l2Hash[outerIndex].hash(elementsToInsert[i])] = elementsToInsert[i];
+                Tables[outerIndex] = innerTable;
                 count++;
-                entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+            } else if (elementsToInsert[i].equals(Tables[outerIndex][innerIndex]));
+
+            else if (Tables[outerIndex][innerIndex] == null) {
+                Tables[outerIndex][innerIndex] = elementsToInsert[i];
+                count++;
             } else {
-                    entrySizes[this.l1Hash.hash(elementsToInsert[i])]++;
+                count++;
                     Rehash(outerIndex, elementsToInsert[i]);
             }
-//            if(checkCorrectness()) TotalRehash();
         }
+
         return count;
     }
     private void TotalRehash(){
         List<Integer> allElements = new ArrayList<Integer>();
-
         for(int i = 0;i<Tables.length;i++){
             if(Tables[i] != null) {
                 for (int j = 0; j < Tables[i].length; j++){
@@ -100,19 +115,19 @@ public class HASH_N <T extends Comparable>  {
                 }
             }
         }
-
-
         do {
-            Integer[][] newTables = new Integer[totalNumKeys][];
-            Integer[][] oldTables = Tables;
+            Tables = new Integer[totalNumKeys][];
             entrySizes = new int[totalNumKeys];
-            Tables = newTables;
+
             L1HashEdit();
+
             insertionDirector(allElements.toArray(new Integer[0]));
-        } while(!checkCorrectness());
+            numOfOuterTableCollisions++;
+        }
+        while(!checkCorrectness());
+
     }
     private void Rehash(int outerIndex , int element){
-
         Integer[] elementsInInnerTable = new Integer[entrySizes[outerIndex]];
         int currIndex = 0;
         if(Tables[outerIndex] != null){
@@ -123,7 +138,6 @@ public class HASH_N <T extends Comparable>  {
             }
         }
 
-
         elementsInInnerTable[currIndex] = element;
         Tables[outerIndex] = HandlingInputCornerCases(outerIndex , elementsInInnerTable);
     }
@@ -133,20 +147,21 @@ public class HASH_N <T extends Comparable>  {
         L2HashEdit(outerIndex);
         Integer[] l2Arr=null;
         while(collision){
-            l2Arr =new Integer[1<<(int)Math.ceil(Math.log(entrySizes[outerIndex] * entrySizes[outerIndex]) / Math.log(2))];
+            l2Arr =new Integer[1<<(int)(Math.ceil(Math.log(entrySizes[outerIndex] * entrySizes[outerIndex]) / Math.log(2)))];
             // variable edit
             numOfCollisions++;
             L2HashEdit(outerIndex);
             collision = false;
 
             for (int k = 0; k < valueToInsert.length; k++) {
+                if(valueToInsert[k] == null){
+                    continue;
+                }
                 innerIndex = l2Hash[outerIndex].hash(valueToInsert[k]);
-
                 if( l2Arr[innerIndex] != null ){
                     // collision case
                     collision = true;
                     break;
-
                 } else {
                     l2Arr[innerIndex] = valueToInsert[k];
                 }
@@ -171,6 +186,7 @@ public class HASH_N <T extends Comparable>  {
                 int outerIndex = this.l1Hash.hash(elementToDelete[i]);
                 if(Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])].equals(elementToDelete[i])){
                     Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])] = null;
+                    entrySizes[outerIndex]--;
                     count++;
                 }
             }
@@ -181,14 +197,18 @@ public class HASH_N <T extends Comparable>  {
     }
     public boolean Search(int elementToSearch){
         int outerIndex = this.l1Hash.hash(elementToSearch);
-        try {
-            if(Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)].equals(elementToSearch)){
+
+        if(Tables[outerIndex] != null) {
+            if (Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)]!= null && elementToSearch == Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)]) {
                 return true;
             }
+            else{
+                return false;
+            }
         }
-        catch (Exception e){
+        else {
             return false;
         }
-        return false;
+
     }
 }
