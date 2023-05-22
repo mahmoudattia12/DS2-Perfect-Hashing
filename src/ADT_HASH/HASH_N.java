@@ -62,7 +62,7 @@ public class HASH_N <T extends Comparable>  {
         if(getType().getSimpleName().equals("String")){
             Integer []element = new Integer[elementToInsert.length];
             for(int i = 0; i < elementToInsert.length;i++){
-                element[i] = elementToInsert.hashCode();
+                element[i] = elementToInsert[i].hashCode()& Integer.MAX_VALUE;
             }
             return element;
         }
@@ -81,32 +81,37 @@ public class HASH_N <T extends Comparable>  {
         return success;
     }
     private int insertionDirector(Integer[] elementsToInsert){
-        int count = 0;
+        int count = 0,noOfInsertions=0;
         for (int i = 0; i < elementsToInsert.length; i++) {
-         if(!Search(elementsToInsert[i])) {
+         if(!Search((T)elementsToInsert[i])) {
              entrySizes[this.l1Hash.hash((int)elementsToInsert[i])]++;
+
          }
          }
 
         for (int i = 0 ; i<elementsToInsert.length;i++) {
-            int outerIndex = this.l1Hash.hash(elementsToInsert[i]);
+            int outerIndex = this.l1Hash.hash((int)elementsToInsert[i]);
             int innerIndex = 0;
             if(Tables[outerIndex]!= null)
-                innerIndex = this.l2Hash[outerIndex].hash(elementsToInsert[i]);
+                innerIndex = this.l2Hash[outerIndex].hash((int)elementsToInsert[i]);
             if (Tables[outerIndex] == null) {
                 L2HashEdit(outerIndex);
                 Integer[] innerTable = new Integer[1<<((int)Math.ceil(Math.log(entrySizes[outerIndex] * entrySizes[outerIndex]) / Math.log(2)))];
-                innerTable[this.l2Hash[outerIndex].hash(elementsToInsert[i])] = elementsToInsert[i];
+                innerTable[this.l2Hash[outerIndex].hash((int)elementsToInsert[i])] = elementsToInsert[i];
                 Tables[outerIndex] = innerTable;
                 count++;
-            } else if (elementsToInsert[i].equals(Tables[outerIndex][innerIndex]));
+
+
+            }
+            else if (Search((T)elementsToInsert[i])){
+            }
 
             else if (Tables[outerIndex][innerIndex] == null) {
                 Tables[outerIndex][innerIndex] = elementsToInsert[i];
                 count++;
             } else {
                 count++;
-                    Rehash(outerIndex, elementsToInsert[i]);
+                Rehash(outerIndex, elementsToInsert[i]);
             }
         }
 
@@ -188,25 +193,42 @@ public class HASH_N <T extends Comparable>  {
     }
     private int deleteDirector(Integer[] elementToDelete){
         int count = 0;
-        try {
-            for(int i = 0 ; i <elementToDelete.length ; i++){
+
+            for(int i = 0 ; i <elementToDelete.length ; i++) {
+                try{
                 int outerIndex = this.l1Hash.hash(elementToDelete[i]);
-                if(Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])].equals(elementToDelete[i])){
+                if (Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])].equals(elementToDelete[i])) {
                     Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToDelete[i])] = null;
                     entrySizes[outerIndex]--;
                     count++;
                 }
             }
-        }
-        catch (Exception e){
-        }
+                catch (Exception e){
+                }
+            }
+
+
         return count;
     }
-    public boolean Search(int elementToSearch){
-        int outerIndex = this.l1Hash.hash(elementToSearch);
+    private int changeForSearch(T generic){
+        int afterHash;
+        if(getType().getSimpleName().equals("String")){
+            afterHash=generic.hashCode()& Integer.MAX_VALUE;
+        }
+        else {
+         afterHash = (int)generic;
+        }
+
+    return afterHash;
+    }
+
+    public boolean Search(T elementToSearch){
+        int elementAfterCast = changeForSearch(elementToSearch);
+        int outerIndex = this.l1Hash.hash(elementAfterCast);
 
         if(Tables[outerIndex] != null) {
-            if (Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)]!= null && elementToSearch == Tables[outerIndex][this.l2Hash[outerIndex].hash(elementToSearch)]) {
+            int innerIndex = this.l2Hash[outerIndex].hash(elementAfterCast);
+            if (Tables[outerIndex][innerIndex]!= null && elementAfterCast == Tables[outerIndex][innerIndex]) {
                 return true;
             }
             else{
