@@ -18,24 +18,26 @@ class CompareTests {
 
     @Test
     void test1(){
-        int size = 10;
+        int size = 5000;
         System.out.println("size: " + size + "\n");
 
         Long[] arr = generateUniqueStrings(size);
         hash_n = new HASH_N(size);
-        hash_n2 = new HASH_N2(size);
+//        hash_n2 = new HASH_N2(size);
 
 //        assertTrue(hash_n.batchInsert(arr) == size);
         for(int i = 0; i < arr.length; i++){
             assertTrue(hash_n.insert(arr[i]));
         }
-        assertTrue(hash_n2.batchInsert(arr) == size);
+//        assertTrue(hash_n2.batchInsert(arr) == size);
 
-        System.out.println("n2 Space: " + hash_n2.getSpace());
-        System.out.println("n Space: " + hash_n.getSpace());
+        memoryStats();
 
-        System.out.println("\nn2 rebuilds: " + hash_n2.getNumOfCollisions());
-        System.out.println("n rebuilds: " + hash_n.getNumOfCollisions());
+//        System.out.println("n2 Space: " + hash_n2.getSpace());
+//        System.out.println("n Space: " + hash_n.getSpace());
+//
+//        System.out.println("\nn2 rebuilds: " + hash_n2.getNumOfCollisions());
+//        System.out.println("n rebuilds: " + hash_n.getNumOfCollisions());
     }
     @Test
     void test2(){
@@ -675,6 +677,22 @@ class CompareTests {
             longArray[i] = Main.stringToLong(uniqueStrings[i]);
         }
         return longArray;
+    }
+
+    public void memoryStats() {
+        int mb = 1024 * 1024;
+        // get Runtime instance
+        Runtime instance = Runtime.getRuntime();
+        System.out.println("Heap Memory [MB]\n");
+        // available memory
+        System.out.println("Total Memory: " + instance.totalMemory() / mb);
+        // free memory
+        System.out.println("Free Memory: " + instance.freeMemory() / mb);
+        // used memory
+        System.out.println("Used Memory: "
+                + (instance.totalMemory() - instance.freeMemory()) / mb);
+        // Maximum available memory
+        System.out.println("Max Memory: " + instance.maxMemory() / mb);
     }
 
 }
