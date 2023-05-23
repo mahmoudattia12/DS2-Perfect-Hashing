@@ -1,64 +1,49 @@
 package ADT_HASH;
+import Dictionary.Main;
 import UNIVERSAL.UniversalHashing;
 
 import java.lang.reflect.Array;
 
-public class HASH_N2 <T extends Comparable<T>> implements IHASH<T> {
-    private Integer[] hashTable;
+public class HASH_N2 implements IHASH {
+    private Long[] hashTable;
     private int n, M, rehashTries = 0, countInserted = 0;
     UniversalHashing h;
 
-    private final Class<T> type;
-    public Class<T> getType() {
-        return type;
-    }
-    public HASH_N2(int N, Class<T> type){
+    public HASH_N2(int N){
         n = N;
-        System.out.println("N: " + n);
         M = (int)(1<<(int)(Math.ceil(Math.log(n*n) / Math.log(2))));
-        hashTable = new Integer[M];
+        hashTable = new Long[M];
         h = new UniversalHashing(M);
-        this.type = type;
     }
-
-    private int changeToInteger(T elementToInsert){
-        if(getType().getSimpleName().equals("String")){
-            int element = elementToInsert.hashCode();
-            return element;
-        }
-        return (Integer) elementToInsert;
-    }
-
-    public boolean insert(T key){
+    public boolean insert(long key){
         //can't insert more than the given size
         if(n == countInserted){
             return false;
         }
-        int element = changeToInteger(key);
-        int index = h.hash(element);
-        if(hashTable[index] != null && hashTable[index] != element){
+        int index = h.hash(key);
+        if(hashTable[index] != null && hashTable[index] != key){
             rehashTries++;
-            return rehash(element);
-        }else if(hashTable[index] != null && hashTable[index] == element){
+            return rehash(key);
+        }else if(hashTable[index] != null && hashTable[index] == key){
             return false;
         }
-        hashTable[index] = element;
+        hashTable[index] = key;
         countInserted++;
         return true;
     }
-    public int batchInsert(T[] list){
+    public int batchInsert(Long[] list){
         int countBatch = 0;
         for(int i = 0; i < list.length && n > countInserted; i++){
             if(insert(list[i])) countBatch++;
         }
         return countBatch;
     }
-    private boolean rehash(int newKey){
-        Integer[] prev = hashTable;
+    private boolean rehash(long newKey){
+        Long[] prev = hashTable;
         boolean collision = true, flag = true;
         while (collision){
             collision = false;
-            hashTable = new Integer[M];
+            hashTable = new Long[M];
             h = new UniversalHashing(M);
             for(int i = 0; i < prev.length; i++){
                 if(prev[i] != null){
@@ -86,22 +71,20 @@ public class HASH_N2 <T extends Comparable<T>> implements IHASH<T> {
         }
         return flag;
     }
-    public boolean search(T key){
-        int element = changeToInteger(key);
-        int index = h.hash(element);
-        return hashTable[index] != null && hashTable[index] == element;
+    public boolean search(long key){
+        int index = h.hash(key);
+        return hashTable[index] != null && hashTable[index] == key;
     }
-    public boolean delete(T key){
-        int element = changeToInteger(key);
-        int index = h.hash(element);
-        if(hashTable[index] != null && hashTable[index] == element){
+    public boolean delete(long key){
+        int index = h.hash(key);
+        if(hashTable[index] != null && hashTable[index] == key){
             hashTable[index] = null;
             countInserted--;
             return true;
         }
         return false;
     }
-    public int batchDelete(T[] list){
+    public int batchDelete(Long[] list){
         int countDelete = 0;
         for(int i = 0; i < list.length; i++){
             if(delete(list[i])) countDelete++;

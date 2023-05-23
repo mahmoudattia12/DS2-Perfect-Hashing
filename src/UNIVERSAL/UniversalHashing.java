@@ -6,7 +6,7 @@ public class UniversalHashing {
     // h is a random b-by-u 0/1 matrix
     private int[][] h;
     private int hashTableLength;
-    private int u = 32; //number of bits for the max inserted key
+    private int u = 64; //number of bits for the max inserted key
     private int b;
 
     //int M = (int)Math.pow(2,Math.ceil(Math.log(n*n) / Math.log(2)));
@@ -29,7 +29,7 @@ public class UniversalHashing {
         System.out.println();
     }
 
-    public int hash(int x){
+    public int hash(long x){
         int[] xBinaryArr = getBinaryArray(x);
         int[] result = new int[h.length];     //to hold h(x) binary representation
         for(int i = 0; i < h.length; i++){
@@ -41,10 +41,10 @@ public class UniversalHashing {
         }
         return getInt(result);  //h(x) //------------------------------>
     }
-    public int[] getBinaryArray(int number) {
+    public int[] getBinaryArray(long number) {
         int[] binaryArray = new int[u];
         for (int i = u - 1; i >= 0; i--) {
-            binaryArray[i] = number & 1;
+            binaryArray[i] = (int) number & 1;
             number = number >> 1;
         }
         return binaryArray;
