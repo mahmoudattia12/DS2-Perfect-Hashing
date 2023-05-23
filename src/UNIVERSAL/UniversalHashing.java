@@ -52,7 +52,7 @@ public class UniversalHashing {
     private int getInt(int[] arr){
         int res = 0;
         for(int i = arr.length - 1; i >= 0; i--){
-            res += arr[i] * Math.pow(2, arr.length-i-1);
+            res += arr[i] * (1<< (arr.length-i-1));
         }
         return res;
     }
