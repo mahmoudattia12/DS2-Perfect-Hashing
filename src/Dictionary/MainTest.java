@@ -7,6 +7,7 @@ import RB_Tree.RB;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
+import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,6 +16,7 @@ class CompareTests {
     HASH_N2 hash_n2;
     AVL<Long> avl;
     RB<Long> rb;
+    RB<String> rb1;
 
     @Test
     void test1(){
@@ -646,7 +648,28 @@ class CompareTests {
         System.out.println("rb: " + ((end-start)/size));
 
     }
+    @Test
+    void test19() {
+        avl = new AVL<Long>();
+        int size =  10;
+        Random random = new Random();
+        Long[] array = generateUniqueStrings(size);
 
+        for (int i = 0; i < array.length; i++) {
+            avl.insert(array[i]);
+        }
+        long time=0;
+            long start = System.nanoTime();
+        int count =200;
+        while(count>0){
+            count--;
+            int randomNumber = random.nextInt(size);
+            avl.search(array[randomNumber]);
+        }
+        time+=((System.nanoTime() - start) / 200);
+
+        System.out.println(time);
+    }
     public static Long[] generateUniqueStrings(int size) {
         int maxLength = 8;
         HashSet<String> uniqueSet = new HashSet<>();
