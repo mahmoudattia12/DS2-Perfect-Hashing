@@ -183,23 +183,23 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr)== arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -237,23 +237,23 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr) == arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -290,23 +290,23 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr) == arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -343,24 +343,24 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
 
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr) == arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -397,23 +397,23 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr) == arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -450,23 +450,23 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
-        hash_n2.batchInsert(arr);
+        assertTrue(hash_n2.batchInsert(arr) == arr.length);
 
 
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
         //hash_n2
         start = System.nanoTime();
         for(int i = 0; i < size; i++){
-            hash_n2.search(arr[i]);
+            assertTrue(hash_n2.search(arr[i]));
         }
         end = System.nanoTime();
         System.out.println("hash_n2: " + ((end-start)/size));
@@ -503,7 +503,7 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
 //        hash_n2.batchInsert(arr);
@@ -512,7 +512,7 @@ class CompareTests {
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
@@ -556,7 +556,7 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
 //        hash_n2.batchInsert(arr);
@@ -565,7 +565,7 @@ class CompareTests {
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
@@ -610,7 +610,7 @@ class CompareTests {
             rb.insert(arr[i]);
         }
         for(int i = 0; i < size; i++){
-            hash_n.insert(arr[i]);
+            assertTrue(hash_n.insert(arr[i]));
         }
 //        hash_n.batchInsert(arr);
 //        hash_n2.batchInsert(arr);
@@ -619,7 +619,7 @@ class CompareTests {
         //hash_n
         long start = System.nanoTime();
         for (int i = 0; i < size; i++){
-            hash_n.search(arr[i]);
+            assertTrue(hash_n.search(arr[i]));
         }
         long end = System.nanoTime();
         System.out.println("hash_n: " + ((end-start)/size));
